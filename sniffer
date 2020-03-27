@@ -1,0 +1,83 @@
+#!/bin/python3
+from tkinter import filedialog
+from os import *
+import netifaces
+import tkinter
+from tkinter import *
+from tkinter.ttk import Combobox
+from tkinter import messagebox
+import progressbar
+import time 
+import os 
+from scapy.all import *
+import scapy
+import argparse
+import colorama
+from colorama import Fore,Back,Style
+colorama.init()
+ports=["SSH","HTTP","FTP","TELNET","HTTPS"]
+def create_window():
+ global window,combobox,combobox_port,btn,lbl2
+ window=Tk()
+ window.title("SNIFFER V1.2 by Zert")
+ window.geometry('400x250')
+ #window.config(bg='black') 
+ lbl = Label(window, text="SNIFFER", font=("Arial Bold",30))
+ lbl.place(x=115,y=1)
+ lbl2 = Label(window, text="", font=("Arial", 12))
+ lbl2.place(x=130,y=180)
+ combobox = Combobox(window,width=25)  
+ combobox['values'] = (netifaces.interfaces())
+ combobox.current(1)
+ combobox.place(x=90,y=70)
+ combobox_port = Combobox(window,width=25)  
+ combobox_port['values'] = (ports)
+ combobox_port.current(1)
+ combobox_port.place(x=90,y=100)
+ btn = Button(window, text="START",fg='green')
+ btn.place(x=130,y=130)
+ btn.bind('<Button-1>',create_sniff)
+ btn_stop = Button(window, text="STOP",fg='red',command=stop_sniffer)
+ btn_stop.place(x=210,y=130)
+ window.resizable(False,False)
+ window.mainloop()
+def change_text(txt,color):
+ lbl2.configure(text=txt,fg=color)
+def main():
+ create_window()
+def create_sniff(event):
+ global sniffer 
+ if combobox_port.get()=="SSH":
+   sniffer = AsyncSniffer(iface=combobox.get(),filter='port 22')  
+ if combobox_port.get()=="HTTP":
+   sniffer = AsyncSniffer(iface=combobox.get(),filter='port 80')
+ if combobox_port.get()=="TELNET":
+   sniffer = AsyncSniffer(iface=combobox.get(),filter='port 23')
+ if combobox_port.get()=="HTTPS":
+   sniffer = AsyncSniffer(iface=combobox.get(),filter='port 8080')
+ if combobox_port.get()=="FTP":
+   sniffer = AsyncSniffer(iface=combobox.get(),filter='port 21')
+ sniff() 
+def sniff():
+ sniffer.start()
+ change_text("Capturing packets",'green')
+def stop_sniffer():
+ try:
+  sniffer.stop()
+ except:
+  messagebox.showerror("Error","Sniffer hasn't started yet")
+ choice=messagebox.askyesno("Save","Save file?")
+ change_text('Stopped','red')
+ if choice == True: 
+   save(sniffer.results)
+ else:
+  change_text('','white')
+def save(data):
+  path_to_file=filedialog.asksaveasfilename(initialdir = "/",title = "Save cap file",filetypes = (("Cap Files","*.cap"),("All Files","*.*")))
+  if path_to_file !="": 
+   wrpcap(path_to_file,data)
+  change_text('File saved','green')
+  time.sleep(0.3)
+  change_text("",'white')
+main()
+
