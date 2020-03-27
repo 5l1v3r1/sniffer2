@@ -1,7 +1,7 @@
 # sniffer
-Simple script on Python3 which sniffs trafic                                 
+GUI VERSION of sniffer on Python 3                                                      
 # INSTALL                                               
-git clone https://github.com/zertmark/sniffer.git                                            
-cd sniffer && chmod +x installer.sh && ./installer.sh                                  
+git clone https://github.com/zertmark/sniffer2.git                                            
+cd sniffer2 && chmod +x installer.sh && ./installer.sh                                  
 # RUN                                 
-python3 sniffer.py interface(e.g. eth0,wlan0) --port(e.g. 80) or --protocol(e.g. tcp,upd) --write <path_to_file>
+./sniffer
